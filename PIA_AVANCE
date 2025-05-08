@@ -1,0 +1,44 @@
+import requests
+import json
+
+todas_habilidades = []
+todos_pokemon = []
+
+url_habilidades = 'https://pokeapi.co/api/v2/ability/'
+for pokemon_id in range(1, 20):
+	respuesta = requests.get(url_habilidades + str(pokemon_id))
+	if respuesta.status_code == 200:
+		datos = respuesta.json()
+		habilidad = {
+			"id": pokemon_id,
+			"Habilidad": datos['name'],
+		}
+		todas_habilidades.append(habilidad)
+
+url_pokemon = 'https://pokeapi.co/api/v2/pokemon/'
+for pokemon_id in range(1, 20):
+	respuesta = requests.get(url_pokemon + str(pokemon_id))
+	if respuesta.status_code == 200:
+		datos = respuesta.json()
+		pokemon = {
+            	"id": pokemon_id,
+            	"Nombre": datos['name'],
+	    		"Tipo": " y ".join([t['type']['name'] for t in datos['types']]),
+	    		"Movimientos": [m['move']['name'] for m in datos['moves'][:5]],
+	    		"Base Experience:": datos['base_experience'],
+	    		"Altura": datos['height'],
+	    		"Peso": datos['weight']
+        }
+		todos_pokemon.append(pokemon)
+
+with open('habilidades.json', 'w') as f:
+    json.dump(todas_habilidades, f, indent=4)
+
+with open('pokemon.json', 'w') as f:
+    json.dump(todos_pokemon, f, indent=4)
+print("HABILIDADES")
+for habilidad in todas_habilidades:
+    print(json.dumps(habilidad, indent=2))
+print("\nPOKEMON")
+for pokemon in todos_pokemon:
+    print(json.dumps(pokemon, indent=2))
