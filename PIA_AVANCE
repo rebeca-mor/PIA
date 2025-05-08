@@ -36,9 +36,11 @@ with open('habilidades.json', 'w') as f:
 
 with open('pokemon.json', 'w') as f:
     json.dump(todos_pokemon, f, indent=4)
+
 print("HABILIDADES")
 for habilidad in todas_habilidades:
     print(json.dumps(habilidad, indent=2))
+
 print("\nPOKEMON")
 for pokemon in todos_pokemon:
     print(json.dumps(pokemon, indent=2))
