@@ -1,0 +1,73 @@
+tipos_pok = []
+exp = []
+altura = []
+pesos = []
+
+for pokemon in todos_pokemon[:19]:
+	tipos = pokemon['Tipo'].split(' y ')
+	for tipo in tipos:
+		tipos_pok.append(tipo)
+
+	exp.append(pokemon['Base Experience'])
+	altura.append(pokemon['Altura'])
+	pesos.append(pokemon['Peso'])
+	
+def moda(lista):
+    max_repeticiones = 0
+    moda = None
+    
+    for i in range(len(lista)):
+        repeticiones = 0
+        for j in range(len(lista)):
+            if lista[i] == lista[j]:
+                repeticiones += 1
+        
+        if repeticiones > max_repeticiones:
+            max_repeticiones = repeticiones
+            moda = lista[i]
+    
+    return moda
+
+def media(lista):
+	if not lista:         
+		return None
+	return sum(lista) / len(lista)
+
+
+def mediana(lista):
+	lista_ordenada = sorted(lista)
+	n = len(lista_ordenada)
+	if n % 2 == 1: 
+		return lista_ordenada[n//2]
+	else: 
+		return (lista_ordenada[n//2 - 1] + lista_ordenada[n//2]) / 2
+
+def varianza(lista):
+	media = sum(lista) / len(lista)
+	diferencias_cuadrado = [(x - media) ** 2 for x in lista]
+	return sum(diferencias_cuadrado) / len(lista)
+
+def desviacion_estandar(lista):
+	return varianza(lista) ** 0.5
+
+
+moda_tipo = moda(tipos_pok)
+moda_exp = moda(exp)
+moda_alt = moda(altura)
+moda_peso =  moda(pesos)
+
+media_exp = media(exp)
+media_alt = media(altura)
+media_peso =  media(pesos)
+
+mediana_exp = mediana(exp)
+mediana_alt = mediana(altura)
+mediana_peso = mediana(pesos)
+
+varianza_exp = varianza(exp)
+varianza_alt = varianza(altura)
+varianza_peso = varianza(pesos)
+
+desviacion_estandar_exp = desviacion_estandar(exp)
+desviacion_estandar_alt = desviacion_estandar(altura)
+desviacion_estandar_peso = desviacion_estandar(pesos)
