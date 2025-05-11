@@ -2,6 +2,7 @@ import pokebase as pb
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+import PIA_modulo as repository
 import requests
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,27 +28,11 @@ def menu():
             break
         else:
             print("Opción no válida")
+            
         
         
-        
-def requestPokemonGeneraDataJsonToApi(pokedex_number):
-    try:
-        url = f"https://pokeapi.co/api/v2/pokemon/{pokedex_number}"
-        data = requests.get(url).json()
-        return data
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-    
-def requestPokemonCustomizedDataJsonToApi(pokedex_number):
-    try:
-        url = f"https://pokeapi.co/api/v2/pokemon-species/{pokedex_number}"
-        data = requests.get(url).json()
-        return data
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-        
+
+
 def foundPokemonByPokedexNumber():
     pokedex_number = int(input("Introduce el número de pokedex: "))
     
