@@ -11,32 +11,49 @@ root = None
 def menu():
     while True:
         print("\nMenú de opciones:")
-        print("1. Buscar pokémon por numero de pokedex:")
-        print("2. Opción 2")
-        print("3. Opción 3")
-        print("4. Salir")
+        print("1. Añadir pokemon a la colección:")
+        print("2. Ver estadisticas matematicas:")
+        print("3. Ver estadisticas de un pokemon por numero de pokedex (Media y grafico):")
+        print("4. Eliminar colección de pokémon")
+        print("5. Salir")
         option = str(input("Selecciona una opción: "))
 
         if option == "1":
-            foundPokemonByPokedexNumber()
+            pokemon = repository.foundPokemonByPokedexNumber()
+            if pokemon is None:
+                print("Pokémon no encontrado.")
+                continue
+            repository.updateFilePokemonList(pokemon)
         elif option == "2":
-            print("Opción 2 seleccionada")
+            pokemonList = repository.getCollectionOfPokemons()
+            if pokemonList is None:
+                print("No hay pokémons en la colección.")
+                continue
+            mean = repository.getMeanOfCollectionOfPokemons(pokemonList)
+            variance = repository.getVarianceOfCollectionOfPokemons(pokemonList)
+            mode = repository.getModeOfPokemonAverageStats(pokemonList)
+            std_dev = repository.getStandardDeviationOfCollectionOfPokemons(pokemonList)
+            
         elif option == "3":
-            print("Opción 3 seleccionada")
+            pokemon = repository.foundPokemonByPokedexNumber()
+            if pokemon is None:
+                print("Pokémon no encontrado.")
+                continue
+            showPokemonGraphicStats(pokemon)
         elif option == "4":
+            safeOption = str(input("¿Estás seguro de que quieres eliminar la colección de pokémon? (s/n): "))
+            if safeOption.lower() != "s":
+                print("Operación cancelada.")
+                continue
+            print("Eliminando colección de pokémon...")
+            repository.deletePokemonList()
+        elif option == "5":
             print("Saliendo del programa...")
             break
         else:
             print("Opción no válida")
-            
-def foundPokemonByPokedexNumber():
-    pokedex_number = str(input("Introduce el número de pokedex: "))
-    showGraphicStats(pokedex_number)
-
     
-def showGraphicStats(pokedex_number):
-    pokemon = repository.getPokemonByPokedexNumber(pokedex_number)
-    
+def showPokemonGraphicStats(pokemon):
     if pokemon is None:
         print("Pokémon no encontrado.")
         return
@@ -56,6 +73,7 @@ def showGraphicStats(pokedex_number):
     
     ax.set_thetagrids(np.degrees(angulos[:-1]), statsName)
     ax.set_title(f"Estadísticas de {pokemon['Nombre']}", size=15, pad=20)
+    ax.set_xlabel(f"Media de estadísticas, {repository.getPromedyOfStats(pokemon)}", size=16, color='black')
     ax.grid(True)
     
     canvas = FigureCanvasTkAgg(fig, master=root)
@@ -63,6 +81,7 @@ def showGraphicStats(pokedex_number):
     canvas.get_tk_widget().pack()
     
     plt.show()
+    
     
 
         
