@@ -67,5 +67,5 @@ proyecto-pokemon/
 
 ## 💬 Créditos
 
-Desarrollado por Angel Adrian Cortes Zuñiga Y Rebeca Moreno como evidencia académica para la materia de [nombre de la materia].
+Desarrollado por Angel Adrian Cortes Zuñiga Y Rebeca Moreno como evidencia académica para la materia de Programación.
 
