@@ -177,7 +177,7 @@ def updateFilePokemonList(newPokemonInfo):
             pokemonList.append(newPokemonInfo)
 
         with open("pokemon_list.json", "w") as file:
-            print(f"Agregando al pokemon {newPokemonInfo['Nombre']} a la lista")
+            print(f"Agregando al pokemon {newPokemonInfo['Nombre']} a la coleccion")
             json.dump(pokemonList, file, indent=4)
 
     except Exception as e:

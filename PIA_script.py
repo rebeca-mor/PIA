@@ -1,9 +1,7 @@
 import pokebase as pb
-import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 import PIA_modulo as repository
-import requests
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -12,7 +10,7 @@ def menu():
     while True:
         print("\nMenú de opciones:")
         print("1. Añadir pokemon a la colección:")
-        print("2. Ver estadisticas matematicas:")
+        print("2. Ver estadisticas matematicas de la coleccion de pokemones:")
         print("3. Ver estadisticas de un pokemon por numero de pokedex (Media y grafico):")
         print("4. Eliminar colección de pokémon")
         print("5. Salir")
@@ -29,11 +27,7 @@ def menu():
             if pokemonList is None:
                 print("No hay pokémons en la colección.")
                 continue
-            mean = repository.getMeanOfCollectionOfPokemons(pokemonList)
-            variance = repository.getVarianceOfCollectionOfPokemons(pokemonList)
-            mode = repository.getModeOfPokemonAverageStats(pokemonList)
-            std_dev = repository.getStandardDeviationOfCollectionOfPokemons(pokemonList)
-            
+            showPokemonCollectionStats(pokemonList)
         elif option == "3":
             pokemon = repository.foundPokemonByPokedexNumber()
             if pokemon is None:
@@ -52,6 +46,42 @@ def menu():
             break
         else:
             print("Opción no válida")
+            
+def showPokemonCollectionStats(listPokemon):
+    names = []
+    colors = []
+    promeedyStats = repository.getPromedyOfStatsList(listPokemon)
+
+    for pokemon in listPokemon:
+        names.append(pokemon['Nombre'])
+        colors.append(pokemon['Color'])
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    bars = ax.bar(names, promeedyStats, color=colors)
+
+    mode = repository.getModeOfPokemonAverageStats(listPokemon)
+    median = repository.getMeanOfCollectionOfPokemons(listPokemon)
+    variance = repository.getVarianceOfCollectionOfPokemons(listPokemon)
+    std_deviation = repository.getStandardDeviationOfCollectionOfPokemons(listPokemon)
+    
+
+    ax.set_title("Estadísticas de la colección de Pokémon", size=15, pad=20)
+    ax.set_xlabel("Pokemones", size=12)
+    ax.set_ylabel("Media de poder", size=12)
+
+    plt.subplots_adjust(bottom=0.25) 
+
+    fig.text(0.1, 0.10, f'Moda: {mode:.2f}', fontsize=11)
+    fig.text(0.1, 0.06, f'Mediana: {median:.2f}', fontsize=11)
+    fig.text(0.5, 0.10, f'Varianza: {variance:.2f}', fontsize=11)
+    fig.text(0.5, 0.06, f'Desviación estándar: {std_deviation:.2f}', fontsize=11)
+        
+    canvas = FigureCanvasTkAgg(fig, master=root)
+    canvas.draw()
+    canvas.get_tk_widget().pack()
+
+    plt.show()
     
 def showPokemonGraphicStats(pokemon):
     if pokemon is None:
