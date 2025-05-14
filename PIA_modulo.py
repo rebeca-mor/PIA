@@ -1,7 +1,9 @@
 import requests
 import json
 import os
-
+import pandas as pd
+import subprocess
+import platform
 # Devuelve una lista de enteros, cada valor entero es el promedio de las estadisticas de cada pokemon.
 # Util para calcular la moda, mediana y varianza de los pokemones.
 def getPromedyOfStatsList(listPokemons):
@@ -71,9 +73,12 @@ def varianza(lista):
     varianza = 0
     media = sum(lista) / len(lista)
     suma_cuadrados = 0
-    for valor in lista:
-        suma_cuadrados += (valor - media) ** 2
-    varianza = suma_cuadrados / (len(lista) -1)
+    try :
+        for valor in lista:
+            suma_cuadrados += (valor - media) ** 2
+        varianza = suma_cuadrados / (len(lista) -1)
+    except ZeroDivisionError:
+        return 0
     return varianza
 
 #Calcula la desviacion estandar de una lista de numeros.
@@ -109,19 +114,7 @@ def requestPokemonCustomizedDataJsonToApi(pokedex_number):
         print(f"Error: {e}")
         return None
 
-def getCollectionOfPokemons():
-    try:
-        with open("pokemon_list.json", "r") as file:
-            pokemonList = json.load(file)
-            if isinstance(pokemonList, dict): 
-                return [pokemonList]
-            return pokemonList
-    except FileNotFoundError:
-        print("Archivo no encontrado.")
-        return None
-    except json.JSONDecodeError:
-        print("Error al decodificar el JSON.")
-        return None
+
 
 def getPokemonFromAPI(pokedex_number):
     pokemonData = requestPokemonGeneraDataJsonToApi(pokedex_number)
@@ -136,7 +129,7 @@ def getPokemonFromAPI(pokedex_number):
         "Nombre": pokemonData['name'],
         "Tipo": " y ".join([t['type']['name'] for t in pokemonData['types']]),
         "Movimientos": [m['move']['name'] for m in pokemonData['moves'][:5]],
-        "Base Experience:": pokemonData['base_experience'],
+        "Base Experience": pokemonData['base_experience'],
         "Estadisticas" : stats,
         "Altura": pokemonData['height'],
         "Peso": pokemonData['weight'],
@@ -144,11 +137,12 @@ def getPokemonFromAPI(pokedex_number):
     }
     
     updateFilePokemonList(pokemon)
+    addPokemonToExcel(pokemon)
     return pokemon
     
 def getPokemonFromFile(pokedex_number):
     try:
-        with open("pokemon_list.json", "r") as file:
+        with open(ruta_json, "r") as file:
             pokemonList = json.load(file)
             if isinstance(pokemonList, dict): 
                 if str(pokemonList.get("id")) == str(pokedex_number):
@@ -163,10 +157,25 @@ def getPokemonFromFile(pokedex_number):
         print("Error al decodificar el JSON.")
     return None
 
+ruta_json = "datos/pokemon_list.json"
+def getCollectionOfPokemons():
+    try:
+        with open(ruta_json, "r") as file:
+            pokemonList = json.load(file)
+            if isinstance(pokemonList, dict): 
+                return [pokemonList]
+            return pokemonList
+    except FileNotFoundError:
+        print("Archivo no encontrado.")
+        return None
+    except json.JSONDecodeError:
+        print("Error al decodificar el JSON.")
+        return None
+    
 def updateFilePokemonList(newPokemonInfo):
     try:
         try:
-            with open("pokemon_list.json", "r") as file:
+            with open(ruta_json, "r") as file:
                 pokemonList = json.load(file)
                 if not isinstance(pokemonList, list):  
                     pokemonList = [pokemonList]
@@ -176,15 +185,62 @@ def updateFilePokemonList(newPokemonInfo):
         if not any(p['id'] == newPokemonInfo['id'] for p in pokemonList):
             pokemonList.append(newPokemonInfo)
 
-        with open("pokemon_list.json", "w") as file:
+        with open(ruta_json, "w") as file:
             print(f"Agregando al pokemon {newPokemonInfo['Nombre']} a la coleccion")
             json.dump(pokemonList, file, indent=4)
 
     except Exception as e:
         print(f"Error al guardar el archivo: {e}")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ruta_excel = os.path.join(BASE_DIR, "datos", "pokemon_list.xlsx")
+def addPokemonToExcel(pokemon, ruta_excel=ruta_excel):
+    try:
+        # Crear archivo si no existe, con las columnas deseadas
+        if not os.path.exists(ruta_excel):
+            df = pd.DataFrame(columns=["id", "Nombre", "Tipo", "Movimientos", "Base Experience", "Estadisticas", "Altura", "Peso", "Color"])
+            df.to_excel(ruta_excel, index=False)
+
+        # Asegurar que 'pokemon' sea un DataFrame
+        df_new = pd.DataFrame([pokemon])  # CORRECCIÓN: debes pasar [pokemon] (una lista con un dict), no el dict directo
+
+        df_existing = pd.read_excel(ruta_excel)
+
+        # Evitar duplicados
+        if not df_existing.empty and 'id' in df_existing.columns and (df_existing['id'] == pokemon['id']).any():
+            print(f"El Pokémon {pokemon['Nombre']} ya está en el archivo Excel.")
+            return
+
+        df_combined = pd.concat([df_existing, df_new], ignore_index=True)
+        df_combined.to_excel(ruta_excel, index=False)
+        print(f"Pokémon {pokemon['Nombre']} agregado correctamente a {ruta_excel}.")
+
+    except Exception as e:
+        print(f"Error al manipular el archivo Excel: {e}")
+        
+        
+def openExcelFile():
+    if os.path.exists(ruta_excel):
+        if platform.system() == "Windows":
+            os.startfile(ruta_excel)
+        elif platform.system() == "Darwin":  # macOS
+            subprocess.call(["open", ruta_excel])
+        else:  # Linux
+            subprocess.call(["xdg-open", ruta_excel])
+    else:
+      print("El archivo Excel no existe.")
         
 def deletePokemonList():
-    os.remove("pokemon_list.json")
-    print("Archivo pokemon_list.json eliminado.")
+    if os.path.exists(ruta_excel):
+        os.remove(ruta_excel)
+        print("Archivo Excel eliminado correctamente.")
+    if os.path.exists(ruta_json):
+        os.remove(ruta_json)
+        print("Archivo Json eliminado.")
+    
+    
+def getCollectionSize() :
+    if getCollectionOfPokemons() is None:
+        return 0
+    return len(getCollectionOfPokemons())
     
     

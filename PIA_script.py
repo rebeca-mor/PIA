@@ -1,6 +1,5 @@
 import pokebase as pb
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
 import PIA_modulo as repository
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,8 +11,9 @@ def menu():
         print("1. Añadir pokemon a la colección:")
         print("2. Ver estadisticas matematicas de la coleccion de pokemones:")
         print("3. Ver estadisticas de un pokemon por numero de pokedex (Media y grafico):")
-        print("4. Eliminar colección de pokémon")
-        print("5. Salir")
+        print("4. Abrir coleccion de pokemones en excel:")
+        print("5. Eliminar colección de pokémon")
+        print("6. Salir")
         option = str(input("Selecciona una opción: "))
 
         if option == "1":
@@ -35,13 +35,16 @@ def menu():
                 continue
             showPokemonGraphicStats(pokemon)
         elif option == "4":
+            repository.openExcelFile()
+            print("Abriendo archivo de Excel...")
+        elif option == "5":
             safeOption = str(input("¿Estás seguro de que quieres eliminar la colección de pokémon? (s/n): "))
             if safeOption.lower() != "s":
                 print("Operación cancelada.")
                 continue
             print("Eliminando colección de pokémon...")
             repository.deletePokemonList()
-        elif option == "5":
+        elif option == "6":
             print("Saliendo del programa...")
             break
         else:
@@ -64,8 +67,8 @@ def showPokemonCollectionStats(listPokemon):
     median = repository.getMeanOfCollectionOfPokemons(listPokemon)
     variance = repository.getVarianceOfCollectionOfPokemons(listPokemon)
     std_deviation = repository.getStandardDeviationOfCollectionOfPokemons(listPokemon)
-    
 
+    
     ax.set_title("Estadísticas de la colección de Pokémon", size=15, pad=20)
     ax.set_xlabel("Pokemones", size=12)
     ax.set_ylabel("Media de poder", size=12)
