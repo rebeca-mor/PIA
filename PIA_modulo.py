@@ -4,7 +4,8 @@ import os
 import pandas as pd
 import subprocess
 import platform
-# Devuelve una lista de enteros, cada valor entero es el promedio de las estadisticas de cada pokemon.
+import openpyxl
+# Devuelve una lista de ente6ros, cada valor entero es el promedio de las estadisticas de cada pokemon.
 # Util para calcular la moda, mediana y varianza de los pokemones.
 def getPromedyOfStatsList(listPokemons):
     stats_values = []
@@ -191,32 +192,40 @@ def updateFilePokemonList(newPokemonInfo):
 
     except Exception as e:
         print(f"Error al guardar el archivo: {e}")
+        
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ruta_excel = os.path.join(BASE_DIR, "datos", "pokemon_list.xlsx")
 def addPokemonToExcel(pokemon, ruta_excel=ruta_excel):
     try:
-        # Crear archivo si no existe, con las columnas deseadas
+        # Convertir listas y diccionarios a texto para poder guardarlos
+        pokemon_serializable = pokemon.copy()
+        pokemon_serializable["Movimientos"] = json.dumps(pokemon["Movimientos"], ensure_ascii=False)
+        pokemon_serializable["Estadisticas"] = json.dumps(pokemon["Estadisticas"], ensure_ascii=False)
+
+        # Crear archivo si no existe, con encabezados adecuados
         if not os.path.exists(ruta_excel):
-            df = pd.DataFrame(columns=["id", "Nombre", "Tipo", "Movimientos", "Base Experience", "Estadisticas", "Altura", "Peso", "Color"])
+            columnas = ["id", "Nombre", "Tipo", "Movimientos", "Base Experience", "Estadisticas", "Altura", "Peso", "Color"]
+            df = pd.DataFrame(columns=columnas)
             df.to_excel(ruta_excel, index=False)
 
-        # Asegurar que 'pokemon' sea un DataFrame
-        df_new = pd.DataFrame([pokemon])  # CORRECCIÓN: debes pasar [pokemon] (una lista con un dict), no el dict directo
+        # Leer archivo existente
+        df_existing= pd.read_excel(ruta_excel)
 
-        df_existing = pd.read_excel(ruta_excel)
-
-        # Evitar duplicados
-        if not df_existing.empty and 'id' in df_existing.columns and (df_existing['id'] == pokemon['id']).any():
+        # Verificar duplicados por ID
+        if not df_existing.empty and (df_existing["id"] == pokemon["id"]).any():
             print(f"El Pokémon {pokemon['Nombre']} ya está en el archivo Excel.")
             return
 
+        # Agregar nueva fila
+        df_new = pd.DataFrame([pokemon_serializable])
         df_combined = pd.concat([df_existing, df_new], ignore_index=True)
+
+        # Guardar en el archivo
         df_combined.to_excel(ruta_excel, index=False)
         print(f"Pokémon {pokemon['Nombre']} agregado correctamente a {ruta_excel}.")
 
     except Exception as e:
         print(f"Error al manipular el archivo Excel: {e}")
-        
         
 def openExcelFile():
     if os.path.exists(ruta_excel):
