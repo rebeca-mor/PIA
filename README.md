@@ -9,7 +9,7 @@
 **2.** Rebeca Moreno
 
 **Matrícula:** 2069465  
-**Grupo:** Grupo universitario  
+**Grupo:** 076
 **Materia:** Programación  
 **Profesor:** Osvaldo HABIB
 
@@ -34,7 +34,7 @@ Además, implementa una estrategia de caché para evitar llamadas innecesarias a
 
 ## 🎥 Video del proyecto
 
-[![Ver video en YouTube](link del video cuando lo tengamos)
+[![Ver video en YouTube](https://youtu.be/ItS5EOf12Hs)
 
 
 
