@@ -1,3 +1,5 @@
 # Ignore all files in the data directory
 __pycache__/
 datos/*
+img/*
+utilities_local/*

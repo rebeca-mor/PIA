@@ -106,7 +106,7 @@ def showPokemonGraphicStats(pokemon):
     
     ax.set_thetagrids(np.degrees(angulos[:-1]), statsName)
     ax.set_title(f"Estadísticas de {pokemon['Nombre']}", size=15, pad=20)
-    ax.set_xlabel(f"Media de estadísticas, {repository.getPromedyOfStats(pokemon)}", size=16, color='black')
+    ax.set_xlabel(f"Media de estadísticas, {repository.getPromedyOfStats(pokemon):.2f}", size=16, color='black')
     ax.grid(True)
     
     canvas = FigureCanvasTkAgg(fig, master=root)

@@ -197,26 +197,21 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ruta_excel = os.path.join(BASE_DIR, "datos", "pokemon_list.xlsx")
 def addPokemonToExcel(pokemon, ruta_excel=ruta_excel):
     try:
-        # Convertir listas y diccionarios a texto para poder guardarlos
         pokemon_serializable = pokemon.copy()
         pokemon_serializable["Movimientos"] = json.dumps(pokemon["Movimientos"], ensure_ascii=False)
         pokemon_serializable["Estadisticas"] = json.dumps(pokemon["Estadisticas"], ensure_ascii=False)
 
-        # Crear archivo si no existe, con encabezados adecuados
         if not os.path.exists(ruta_excel):
             columnas = ["id", "Nombre", "Tipo", "Movimientos", "Base Experience", "Estadisticas", "Altura", "Peso", "Color"]
             df = pd.DataFrame(columns=columnas)
             df.to_excel(ruta_excel, index=False)
 
-        # Leer archivo existente
         df_existing= pd.read_excel(ruta_excel)
 
-        # Verificar duplicados por ID
         if not df_existing.empty and (df_existing["id"] == pokemon["id"]).any():
             print(f"El Pokémon {pokemon['Nombre']} ya está en el archivo Excel.")
             return
 
-        # Agregar nueva fila
         df_new = pd.DataFrame([pokemon_serializable])
         df_combined = pd.concat([df_existing, df_new], ignore_index=True)
 
@@ -251,5 +246,3 @@ def getCollectionSize() :
     if getCollectionOfPokemons() is None:
         return 0
     return len(getCollectionOfPokemons())
-    
-    
