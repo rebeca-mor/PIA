@@ -34,7 +34,7 @@ Además, implementa una estrategia de caché para evitar llamadas innecesarias a
 
 ## 🎥 Video del proyecto
 
-[![Ver video en YouTube](https://youtu.be/ItS5EOf12Hs)
+[![Ver video en YouTube](https://img.youtube.com/vi/ItS5EOf12Hs/0.jpg)](https://youtu.be/ItS5EOf12Hs)
 
 
 
